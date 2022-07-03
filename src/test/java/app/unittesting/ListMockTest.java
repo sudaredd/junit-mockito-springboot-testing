@@ -1,7 +1,9 @@
 package app.unittesting;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +69,7 @@ public class ListMockTest {
 
     String val1 = mockList.get(11);
 
-    //verify
+    // verify
     verify(mockList).get(10);
     verify(mockList, times(1)).get(10);
     verify(mockList, times(0)).get(0);
@@ -75,6 +77,77 @@ public class ListMockTest {
     verify(mockList, atLeast(1)).get(anyInt());
     verify(mockList, atMost(2)).get(anyInt());
     verify(mockList, never()).get(2);
+  }
+
+  @Test
+  public void testArgumentCapturing() {
+
+    mockList.add("someString");
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+    verify(mockList).add(captor.capture());
+
+    assertEquals("someString", captor.getValue());
+  }
+
+  @Test
+  public void testArgumentCapturingMultipleCalls() {
+
+    mockList.add("String1");
+
+    mockList.add("String2");
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+    verify(mockList, times(2)).add(captor.capture());
+
+    assertEquals(List.of("String1", "String2"), captor.getAllValues());
+  }
+
+  @Test
+  public void testMocking() {
+    ArrayList arrayListMock = mock(ArrayList.class);
+
+    System.out.println(arrayListMock.get(0));
+    System.out.println(arrayListMock.size());
+
+    arrayListMock.add("test1");
+    arrayListMock.add("test2");
+
+    System.out.println(arrayListMock.get(0)); // return null
+    System.out.println(arrayListMock.size()); // return 0
+
+    when(arrayListMock.size()).thenReturn(5);
+    System.out.println(arrayListMock.size()); // print 5
+  }
+
+  @Test
+  public void testSpy() {
+
+    ArrayList arrayListSpy = spy(ArrayList.class);
+
+    try {
+      System.out.println(arrayListSpy.get(0)); // throws exception
+    } catch (IndexOutOfBoundsException ex) {
+      System.err.println("Index out of bound exception");
+    }
+    System.out.println(arrayListSpy.size()); // returns 0
+
+    arrayListSpy.add("test1");
+    arrayListSpy.add("test2");
+
+    System.out.println(arrayListSpy.get(0)); // return test1
+    System.out.println(arrayListSpy.size()); // return 2
+
+    when(arrayListSpy.size()).thenReturn(5);
+    System.out.println(arrayListSpy.size()); // print 5
+
+    arrayListSpy.add("test3");
+    System.out.println(arrayListSpy.size()); // print 5
+
+    verify(arrayListSpy).add("test3");
+
 
   }
 }
