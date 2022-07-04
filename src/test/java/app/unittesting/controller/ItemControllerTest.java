@@ -56,7 +56,7 @@ class ItemControllerTest {
             .andExpect(content().json(expected))
             .andReturn();
 
-    JSONAssert.assertEquals(expected, mvcResult.getResponse().getContentAsString(), true);
+    JSONAssert.assertEquals(expected, mvcResult.getResponse().getContentAsString(), false);
   }
 
   @Test
